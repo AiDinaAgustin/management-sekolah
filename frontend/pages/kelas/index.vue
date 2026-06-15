@@ -58,12 +58,12 @@
                   <span class="text-base font-bold leading-none text-slate-400">{{ getSortIcon('nama_kelas') }}</span>
                 </button>
               </th>
-              <!-- <th class="px-4 py-4 font-medium">
+              <th class="px-4 py-4 font-medium">
                 <button type="button" class="inline-flex items-center gap-2" @click="toggleSort('tingkat')">
                   <span>Tingkat</span>
                   <span class="text-base font-bold leading-none text-slate-400">{{ getSortIcon('tingkat') }}</span>
                 </button>
-              </th> -->
+              </th>
               <th class="px-4 py-4 font-medium">
                 <button type="button" class="inline-flex items-center gap-2" @click="toggleSort('rombel')">
                   <span>Rombel</span>
@@ -88,7 +88,7 @@
           </thead>
           <tbody>
             <tr v-for="classroom in classrooms.data" :key="classroom.id" class="border-b border-slate-300/70 text-slate-700 last:border-b-0">
-              <td v-if="auth.user?.role !== 'guru'" class="px-4 py-4">
+              <td class="px-4 py-4">
                 <div class="flex items-center gap-3">
                   <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -106,7 +106,7 @@
               <td class="px-4 py-4 text-slate-600">{{ classroom.wali_kelas?.nama || '-' }}</td>
               <td class="px-4 py-4 text-slate-600">{{ formatAcademicYear(classroom) }}</td>
               <td class="px-4 py-4 text-slate-600">{{ classroom.jumlah_siswa ?? 0 }}</td>
-              <td class="px-4 py-4">
+              <td v-if="auth.user?.role !== 'guru'" class="px-4 py-4">
                 <div class="flex items-center justify-end gap-2">
                   <NuxtLink :to="`/kelas/${classroom.id}/edit`" class="rounded-xl border border-slate-200 bg-white p-2 text-slate-400 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600" aria-label="Edit kelas">
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -403,4 +403,3 @@ const formatAcademicYear = (classroom: ClassroomItem) => {
   return `${classroom.tahun_ajaran.nama_tahun_ajaran}  -  ${classroom.tahun_ajaran.semester}`;
 };
 </script>
-

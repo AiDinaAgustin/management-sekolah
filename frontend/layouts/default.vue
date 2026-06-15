@@ -17,18 +17,59 @@
         </div>
         <div class="min-h-0 flex-1 overflow-y-auto p-4">
           <nav class="space-y-2">
-            <NuxtLink
-              v-for="item in menu"
-              :key="item.to"
-              :to="item.to"
-              class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-indigo-100/80 transition hover:bg-white/10 hover:text-white"
-              :class="isActiveMenu(item.to) ? 'bg-white text-indigo-700 shadow-lg shadow-indigo-950/20 hover:bg-white hover:text-indigo-700' : ''"
-            >
-              <span class="flex h-8 w-8 items-center justify-center rounded-xl" :class="isActiveMenu(item.to) ? 'bg-indigo-50 text-indigo-600' : 'bg-white/10 text-indigo-100'">
-                <component :is="item.icon" class="h-4 w-4" />
-              </span>
-              {{ item.label }}
-            </NuxtLink>
+            <template v-for="group in menu">
+              <!-- Standalone item (tanpa grup), mis. Dashboard -->
+              <NuxtLink
+                v-if="!group.items"
+                :key="`link-${group.key}`"
+                :to="group.to"
+                class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-indigo-100/80 transition hover:bg-white/10 hover:text-white"
+                :class="isActiveMenu(group.to) ? 'bg-white text-indigo-700 shadow-lg shadow-indigo-950/20 hover:bg-white hover:text-indigo-700' : ''"
+              >
+                <span class="flex h-8 w-8 items-center justify-center rounded-xl" :class="isActiveMenu(group.to) ? 'bg-indigo-50 text-indigo-600' : 'bg-white/10 text-indigo-100'">
+                  <component :is="group.icon" class="h-4 w-4" />
+                </span>
+                {{ group.label }}
+              </NuxtLink>
+
+              <!-- Grup dengan sub-menu (accordion) -->
+              <div v-else :key="`group-${group.key}`">
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-indigo-100/80 transition hover:bg-white/10 hover:text-white"
+                  @click="toggleGroup(group.key)"
+                >
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-indigo-100">
+                    <component :is="group.icon" class="h-4 w-4" />
+                  </span>
+                  <span class="flex-1 text-left">{{ group.label }}</span>
+                  <svg
+                    class="h-4 w-4 shrink-0 transition-transform duration-200"
+                    :class="isGroupOpen(group.key) ? 'rotate-180' : ''"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06Z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+
+                <div v-show="isGroupOpen(group.key)" class="mt-1 space-y-1 pl-4">
+                  <NuxtLink
+                    v-for="item in group.items"
+                    :key="item.to"
+                    :to="item.to"
+                    class="flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-indigo-100/70 transition hover:bg-white/10 hover:text-white"
+                    :class="isActiveMenu(item.to) ? 'bg-white text-indigo-700 shadow-lg shadow-indigo-950/20 hover:bg-white hover:text-indigo-700' : ''"
+                  >
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg" :class="isActiveMenu(item.to) ? 'bg-indigo-50 text-indigo-600' : 'bg-white/10 text-indigo-100'">
+                      <component :is="item.icon" class="h-3.5 w-3.5" />
+                    </span>
+                    {{ item.label }}
+                  </NuxtLink>
+                </div>
+              </div>
+            </template>
           </nav>
         </div>
         <div class="shrink-0 p-4">
@@ -105,26 +146,81 @@ const userMenuRef = ref<HTMLElement | null>(null);
 const currentRoute = computed(() => route.meta ?? {});
 const schoolProfile = useSchoolProfile();
 
-const allMenu = [
-  { label: 'Dashboard', to: '/', icon: resolveComponent('IconDashboard') },
-  { label: 'Siswa', to: '/siswa', icon: resolveComponent('IconUsers') },
-  { label: 'Guru', to: '/guru', icon: resolveComponent('IconTeacher') },
-  { label: 'Guru Mapel', to: '/guru-mapel', icon: resolveComponent('IconBook') },
-  { label: 'Kelas', to: '/kelas', icon: resolveComponent('IconClassroom') },
-  { label: 'Tahun Ajaran', to: '/tahun-ajaran', icon: resolveComponent('IconCalendar') },
-  { label: 'Mata Pelajaran', to: '/mata-pelajaran', icon: resolveComponent('IconBook') },
-  { label: 'Jadwal Pelajaran', to: '/jadwal-pelajaran', icon: resolveComponent('IconCalendar') },
-  { label: 'Absensi', to: '/absensi', icon: resolveComponent('IconCalendar') },
-  { label: 'Absensi Mapel', to: '/absensi-pelajaran', icon: resolveComponent('IconCalendar') },
-  { label: 'Nilai', to: '/nilai', icon: resolveComponent('IconChart') },
-  { label: 'Rapot', to: '/rapot', icon: resolveComponent('IconDocument') },
-  { label: 'Profil Sekolah', to: '/profil-sekolah', icon: resolveComponent('IconHome') },
+type MenuLeaf = { label: string; to: string; icon: ReturnType<typeof resolveComponent> };
+type MenuEntry = MenuLeaf & { key: string; items?: MenuLeaf[] };
+
+const allMenu: MenuEntry[] = [
+  { key: 'dashboard', label: 'Dashboard', to: '/', icon: resolveComponent('IconDashboard') },
+  {
+    key: 'data-master',
+    label: 'Data Master',
+    to: '',
+    icon: resolveComponent('IconUsers'),
+    items: [
+      { label: 'Siswa', to: '/siswa', icon: resolveComponent('IconUsers') },
+      { label: 'Guru', to: '/guru', icon: resolveComponent('IconTeacher') },
+      { label: 'Guru Mapel', to: '/guru-mapel', icon: resolveComponent('IconBook') },
+      { label: 'Kelas', to: '/kelas', icon: resolveComponent('IconClassroom') },
+      { label: 'Tahun Ajaran', to: '/tahun-ajaran', icon: resolveComponent('IconCalendar') },
+      { label: 'Mata Pelajaran', to: '/mata-pelajaran', icon: resolveComponent('IconBook') },
+    ],
+  },
+  {
+    key: 'akademik',
+    label: 'Akademik',
+    to: '',
+    icon: resolveComponent('IconCalendar'),
+    items: [
+      { label: 'Jadwal Pelajaran', to: '/jadwal-pelajaran', icon: resolveComponent('IconCalendar') },
+      { label: 'Nilai', to: '/nilai', icon: resolveComponent('IconChart') },
+      { label: 'Rapot', to: '/rapot', icon: resolveComponent('IconDocument') },
+    ],
+  },
+  {
+    key: 'absensi',
+    label: 'Absensi',
+    to: '',
+    icon: resolveComponent('IconCalendar'),
+    items: [
+      { label: 'Absensi', to: '/absensi', icon: resolveComponent('IconCalendar') },
+      { label: 'Absensi Mapel', to: '/absensi-pelajaran', icon: resolveComponent('IconCalendar') },
+    ],
+  },
+  {
+    key: 'pengaturan',
+    label: 'Pengaturan',
+    to: '',
+    icon: resolveComponent('IconHome'),
+    items: [
+      { label: 'Profil Sekolah', to: '/profil-sekolah', icon: resolveComponent('IconHome') },
+    ],
+  },
 ];
 
 const guruAllowedMenu = ['/', '/kelas', '/jadwal-pelajaran', '/absensi', '/absensi-pelajaran', '/nilai'];
-const menu = computed(() => auth.user?.role === 'guru'
-  ? allMenu.filter((item) => guruAllowedMenu.includes(item.to))
-  : allMenu);
+const menu = computed<MenuEntry[]>(() => {
+  if (auth.user?.role !== 'guru') {
+    return allMenu;
+  }
+
+  return allMenu
+    .map((group) => {
+      if (!group.items) {
+        return guruAllowedMenu.includes(group.to) ? group : null;
+      }
+
+      const items = group.items.filter((item) => guruAllowedMenu.includes(item.to));
+
+      return items.length ? { ...group, items } : null;
+    })
+    .filter((group): group is MenuEntry => group !== null);
+});
+
+const openGroups = ref<Record<string, boolean>>({});
+const isGroupOpen = (key: string) => openGroups.value[key] ?? false;
+const toggleGroup = (key: string) => {
+  openGroups.value[key] = !isGroupOpen(key);
+};
 
 const isActiveMenu = (path: string) => {
   if (path === '/') {
