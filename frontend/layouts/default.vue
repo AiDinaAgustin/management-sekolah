@@ -1,5 +1,6 @@
 <template>
   <div class="h-screen overflow-hidden p-3 lg:p-6">
+    <CommonToastHost />
     <div class="flex h-[calc(100vh-1.5rem)] overflow-hidden rounded-[2rem] border border-white/60 bg-white/70 shadow-[0_20px_60px_rgba(76,81,191,0.15)] backdrop-blur-xl lg:h-[calc(100vh-3rem)]">
       <aside class="hidden h-full w-72 shrink-0 overflow-hidden bg-gradient-to-b from-indigo-600 via-indigo-700 to-blue-900 text-white lg:flex lg:flex-col">
         <div class="shrink-0 border-b border-white/10 p-6">

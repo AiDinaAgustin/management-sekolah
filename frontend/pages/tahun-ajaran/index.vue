@@ -206,6 +206,7 @@ definePageMeta({
   pageDescription: 'Kelola daftar tahun ajaran, status aktif, pencarian, filter, dan aksi data.',
 });
 
+const toast = useToast();
 const search = ref('');
 const semester = ref('');
 const statusAktif = ref('');
@@ -321,9 +322,11 @@ const activateAcademicYear = async (academicYear: AcademicYearItem) => {
       },
     });
 
+    toast.success(`Tahun ajaran ${academicYear.nama_tahun_ajaran} ${academicYear.semester} berhasil diaktifkan.`);
     await fetchAcademicYears();
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal mengaktifkan tahun ajaran.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }
@@ -339,6 +342,8 @@ const deleteAcademicYear = async (academicYear: AcademicYearItem) => {
   try {
     await useApi(`/academic-years/${academicYear.id}`, { method: 'DELETE' });
 
+    toast.success(`Tahun ajaran ${academicYear.nama_tahun_ajaran} ${academicYear.semester} berhasil dihapus.`);
+
     if (academicYears.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -346,6 +351,7 @@ const deleteAcademicYear = async (academicYear: AcademicYearItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus data tahun ajaran.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

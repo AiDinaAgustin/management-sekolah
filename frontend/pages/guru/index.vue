@@ -128,6 +128,7 @@ definePageMeta({
   pageDescription: 'Kelola daftar guru, pencarian, dan aksi data guru.',
 });
 
+const toast = useToast();
 const search = ref('');
 const page = ref(1);
 const sortBy = ref<'nama' | 'nip' | 'email'>('nama');
@@ -205,6 +206,8 @@ const deleteTeacher = async (teacher: TeacherItem) => {
   try {
     await useApi(`/teachers/${teacher.id}`, { method: 'DELETE' });
 
+    toast.success(`Data guru ${teacher.nama} berhasil dihapus.`);
+
     if (teachers.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -212,6 +215,7 @@ const deleteTeacher = async (teacher: TeacherItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus data guru.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

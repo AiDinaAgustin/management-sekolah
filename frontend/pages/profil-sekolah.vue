@@ -60,6 +60,7 @@ definePageMeta({
 
 const auth = useAuthStore();
 const router = useRouter();
+const toast = useToast();
 const schoolProfile = useSchoolProfile();
 const isLoading = ref(true);
 const isSubmitting = ref(false);
@@ -115,9 +116,11 @@ const saveProfile = async () => {
     schoolProfile.value.tagline = form.tagline || 'Sistem Informasi Sekolah';
     message.type = 'success';
     message.text = 'Profil sekolah berhasil diperbarui.';
+    toast.success(message.text);
   } catch (error: any) {
     message.type = 'error';
     message.text = error?.data?.message || 'Gagal menyimpan profil sekolah.';
+    toast.error(message.text);
   } finally {
     isSubmitting.value = false;
   }

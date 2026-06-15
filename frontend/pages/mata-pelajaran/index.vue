@@ -117,6 +117,7 @@ definePageMeta({
   pageDescription: 'Kelola daftar mata pelajaran, pencarian, dan aksi data mapel.',
 });
 
+const toast = useToast();
 const search = ref('');
 const page = ref(1);
 const sortBy = ref<'kode_mapel' | 'nama_mapel'>('nama_mapel');
@@ -194,6 +195,8 @@ const deleteSubject = async (subject: SubjectItem) => {
   try {
     await useApi(`/subjects/${subject.id}`, { method: 'DELETE' });
 
+    toast.success(`Mata pelajaran ${subject.nama_mapel} berhasil dihapus.`);
+
     if (subjects.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -201,6 +204,7 @@ const deleteSubject = async (subject: SubjectItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus data mata pelajaran.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

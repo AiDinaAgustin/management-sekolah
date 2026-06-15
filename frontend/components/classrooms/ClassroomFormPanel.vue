@@ -112,6 +112,7 @@ type ClassroomForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingClassroom = ref(false);
 const formError = ref('');
@@ -185,6 +186,7 @@ const submitClassroom = async () => {
       await useApi(`/classes/${props.classroomId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Data kelas berhasil ditambahkan.' : 'Data kelas berhasil diperbarui.');
     emit('saved');
     await router.push('/kelas');
   } catch (error: any) {
@@ -192,6 +194,7 @@ const submitClassroom = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan data kelas.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

@@ -170,6 +170,7 @@ definePageMeta({
   pageDescription: 'Kelola relasi guru dan mata pelajaran yang diampu.',
 });
 
+const toast = useToast();
 const search = ref('');
 const teacherId = ref('');
 const subjectId = ref('');
@@ -283,6 +284,8 @@ const deleteTeacherSubject = async (teacherSubject: TeacherSubjectItem) => {
   try {
     await useApi(`/teacher-subjects/${teacherSubject.id}`, { method: 'DELETE' });
 
+    toast.success('Relasi guru mapel berhasil dihapus.');
+
     if (teacherSubjects.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -290,6 +293,7 @@ const deleteTeacherSubject = async (teacherSubject: TeacherSubjectItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus relasi guru mapel.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

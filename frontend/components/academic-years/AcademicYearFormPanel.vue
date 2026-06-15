@@ -90,6 +90,7 @@ type AcademicYearForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingAcademicYear = ref(false);
 const formError = ref('');
@@ -138,6 +139,7 @@ const submitAcademicYear = async () => {
       await useApi(`/academic-years/${props.academicYearId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Tahun ajaran berhasil ditambahkan.' : 'Tahun ajaran berhasil diperbarui.');
     emit('saved');
     await router.push('/tahun-ajaran');
   } catch (error: any) {
@@ -145,6 +147,7 @@ const submitAcademicYear = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan data tahun ajaran.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

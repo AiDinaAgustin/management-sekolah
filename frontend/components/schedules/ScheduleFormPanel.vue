@@ -118,6 +118,7 @@ type ScheduleForm = {
 
 const days: ScheduleForm['hari'][] = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingSchedule = ref(false);
 const formError = ref('');
@@ -225,6 +226,7 @@ const submitSchedule = async () => {
       await useApi(`/schedules/${props.scheduleId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Jadwal pelajaran berhasil ditambahkan.' : 'Jadwal pelajaran berhasil diperbarui.');
     emit('saved');
     await router.push('/jadwal-pelajaran');
   } catch (error: any) {
@@ -232,6 +234,7 @@ const submitSchedule = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan jadwal pelajaran.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

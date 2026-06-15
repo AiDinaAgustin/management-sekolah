@@ -201,6 +201,7 @@ definePageMeta({
   pageDescription: 'Kelola daftar siswa, pencarian, filter, dan aksi data siswa.',
 });
 
+const toast = useToast();
 const search = ref('');
 const statusAktif = ref('');
 const kelasId = ref('');
@@ -324,6 +325,8 @@ const deleteStudent = async (student: StudentItem) => {
       method: 'DELETE',
     });
 
+    toast.success(`Data siswa ${student.nama_lengkap} berhasil dihapus.`);
+
     if (students.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -331,6 +334,7 @@ const deleteStudent = async (student: StudentItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus data siswa.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

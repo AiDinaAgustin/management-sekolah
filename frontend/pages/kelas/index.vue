@@ -220,6 +220,7 @@ definePageMeta({
 });
 
 const auth = useAuthStore();
+const toast = useToast();
 
 const search = ref('');
 const tingkat = ref('');
@@ -343,6 +344,8 @@ const deleteClassroom = async (classroom: ClassroomItem) => {
   try {
     await useApi(`/classes/${classroom.id}`, { method: 'DELETE' });
 
+    toast.success(`Data kelas ${classroom.nama_kelas} berhasil dihapus.`);
+
     if (classrooms.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -350,6 +353,7 @@ const deleteClassroom = async (classroom: ClassroomItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus data kelas.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

@@ -59,6 +59,7 @@ type SubjectForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingSubject = ref(false);
 const formError = ref('');
@@ -104,6 +105,7 @@ const submitSubject = async () => {
       await useApi(`/subjects/${props.subjectId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Mata pelajaran berhasil ditambahkan.' : 'Mata pelajaran berhasil diperbarui.');
     emit('saved');
     await router.push('/mata-pelajaran');
   } catch (error: any) {
@@ -111,6 +113,7 @@ const submitSubject = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan data mata pelajaran.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

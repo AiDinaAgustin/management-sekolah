@@ -323,6 +323,7 @@ definePageMeta({
 });
 
 const auth = useAuthStore();
+const toast = useToast();
 
 const days: ScheduleItem['hari'][] = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const yearPreviewMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -463,6 +464,9 @@ const deleteSchedule = async (schedule: ScheduleItem) => {
 
   try {
     await useApi(`/schedules/${schedule.id}`, { method: 'DELETE' });
+
+    toast.success('Jadwal pelajaran berhasil dihapus.');
+
     if (schedules.value.data.length === 1 && page.value > 1) {
       page.value -= 1;
     } else {
@@ -470,6 +474,7 @@ const deleteSchedule = async (schedule: ScheduleItem) => {
     }
   } catch (error: any) {
     errorMessage.value = error?.data?.message || 'Gagal menghapus jadwal pelajaran.';
+    toast.error(errorMessage.value);
   } finally {
     actionLoadingId.value = null;
   }

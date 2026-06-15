@@ -77,6 +77,7 @@ type TeacherForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingTeacher = ref(false);
 const formError = ref('');
@@ -131,6 +132,7 @@ const submitTeacher = async () => {
       await useApi(`/teachers/${props.teacherId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Data guru berhasil ditambahkan.' : 'Data guru berhasil diperbarui.');
     emit('saved');
     await router.push('/guru');
   } catch (error: any) {
@@ -138,6 +140,7 @@ const submitTeacher = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan data guru.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

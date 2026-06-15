@@ -187,6 +187,7 @@ type AttendanceRowForm = {
 };
 
 const auth = useAuthStore();
+const toast = useToast();
 const selectedDate = ref(new Date().toISOString().slice(0, 10));
 const selectedTeacherId = ref('');
 const teachers = ref<TeacherOption[]>([]);
@@ -332,12 +333,14 @@ const saveAttendances = async () => {
     });
 
     successMessage.value = 'Absensi pembelajaran berhasil disimpan.';
+    toast.success(successMessage.value);
     await fetchScheduleCards();
   } catch (error: any) {
     const validationErrors = error?.data?.errors;
     errorMessage.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan absensi pembelajaran.';
+    toast.error(errorMessage.value);
   } finally {
     isSaving.value = false;
   }

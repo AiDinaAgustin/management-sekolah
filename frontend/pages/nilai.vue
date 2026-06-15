@@ -143,6 +143,7 @@ type GradeRowForm = {
 };
 
 const auth = useAuthStore();
+const toast = useToast();
 const teachers = ref<TeacherOption[]>([]);
 const classrooms = ref<GradeClassroomOption[]>([]);
 const semesters = ref<string[]>([]);
@@ -268,12 +269,14 @@ const saveGrades = async () => {
       },
     });
     successMessage.value = 'Nilai berhasil disimpan.';
+    toast.success(successMessage.value);
     await fetchGradeSheet();
   } catch (error: any) {
     const validationErrors = error?.data?.errors;
     errorMessage.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan nilai.';
+    toast.error(errorMessage.value);
   } finally {
     isSaving.value = false;
   }

@@ -159,6 +159,7 @@ type StudentForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingStudent = ref(false);
 const formError = ref('');
@@ -269,6 +270,7 @@ const submitStudent = async () => {
       await useApi(`/students/${props.studentId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Data siswa berhasil ditambahkan.' : 'Data siswa berhasil diperbarui.');
     emit('saved');
     await router.push('/siswa');
   } catch (error: any) {
@@ -276,6 +278,7 @@ const submitStudent = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan data siswa.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }

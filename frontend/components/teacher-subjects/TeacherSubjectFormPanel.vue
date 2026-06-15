@@ -69,6 +69,7 @@ type TeacherSubjectForm = {
 };
 
 const router = useRouter();
+const toast = useToast();
 const isSubmitting = ref(false);
 const loadingTeacherSubject = ref(false);
 const formError = ref('');
@@ -126,6 +127,7 @@ const submitTeacherSubject = async () => {
       await useApi(`/teacher-subjects/${props.teacherSubjectId}`, { method: 'PUT', body: payload });
     }
 
+    toast.success(props.mode === 'create' ? 'Relasi guru mapel berhasil ditambahkan.' : 'Relasi guru mapel berhasil diperbarui.');
     emit('saved');
     await router.push('/guru-mapel');
   } catch (error: any) {
@@ -133,6 +135,7 @@ const submitTeacherSubject = async () => {
     formError.value = validationErrors && typeof validationErrors === 'object'
       ? Object.values(validationErrors).flat().join(' ')
       : error?.data?.message || 'Gagal menyimpan relasi guru mapel.';
+    toast.error(formError.value);
   } finally {
     isSubmitting.value = false;
   }
