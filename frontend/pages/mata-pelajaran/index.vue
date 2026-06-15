@@ -118,6 +118,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const search = ref('');
 const page = ref(1);
 const sortBy = ref<'kode_mapel' | 'nama_mapel'>('nama_mapel');
@@ -186,7 +187,12 @@ const getSortIcon = (column: 'kode_mapel' | 'nama_mapel') => {
 };
 
 const deleteSubject = async (subject: SubjectItem) => {
-  if (!window.confirm(`Hapus data mata pelajaran ${subject.nama_mapel}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Mata Pelajaran',
+    message: `Yakin ingin menghapus data mata pelajaran ${subject.nama_mapel}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

@@ -202,6 +202,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const search = ref('');
 const statusAktif = ref('');
 const kelasId = ref('');
@@ -314,7 +315,12 @@ const getSortIcon = (column: 'nama_lengkap' | 'jenis_kelamin' | 'tanggal_lahir' 
 };
 
 const deleteStudent = async (student: StudentItem) => {
-  if (!window.confirm(`Hapus data siswa ${student.nama_lengkap}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Data Siswa',
+    message: `Yakin ingin menghapus data siswa ${student.nama_lengkap}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

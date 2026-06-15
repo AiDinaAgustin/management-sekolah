@@ -221,6 +221,7 @@ definePageMeta({
 
 const auth = useAuthStore();
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const search = ref('');
 const tingkat = ref('');
@@ -335,7 +336,12 @@ const getSortIcon = (column: 'nama_kelas' | 'tingkat' | 'rombel' | 'wali_kelas' 
 };
 
 const deleteClassroom = async (classroom: ClassroomItem) => {
-  if (!window.confirm(`Hapus data kelas ${classroom.nama_kelas}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Data Kelas',
+    message: `Yakin ingin menghapus data kelas ${classroom.nama_kelas}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

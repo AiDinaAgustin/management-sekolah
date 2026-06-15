@@ -171,6 +171,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const search = ref('');
 const teacherId = ref('');
 const subjectId = ref('');
@@ -275,7 +276,12 @@ const getSortIcon = (column: 'teacher' | 'subject' | 'kode_mapel') => {
 };
 
 const deleteTeacherSubject = async (teacherSubject: TeacherSubjectItem) => {
-  if (!window.confirm(`Hapus relasi ${teacherSubject.teacher?.nama || 'guru'} dengan ${teacherSubject.subject?.nama_mapel || 'mapel'}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Relasi Guru Mapel',
+    message: `Yakin ingin menghapus relasi ${teacherSubject.teacher?.nama || 'guru'} dengan ${teacherSubject.subject?.nama_mapel || 'mapel'}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

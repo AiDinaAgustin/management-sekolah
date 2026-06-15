@@ -324,6 +324,7 @@ definePageMeta({
 
 const auth = useAuthStore();
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const days: ScheduleItem['hari'][] = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const yearPreviewMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -456,7 +457,12 @@ const getSortIcon = (column: 'hari' | 'jam_mulai' | 'kelas' | 'teacher' | 'subje
 };
 
 const deleteSchedule = async (schedule: ScheduleItem) => {
-  if (!window.confirm(`Hapus jadwal ${schedule.subject?.nama_mapel || 'mapel'} untuk kelas ${schedule.kelas?.nama_kelas || '-'}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Jadwal Pelajaran',
+    message: `Yakin ingin menghapus jadwal ${schedule.subject?.nama_mapel || 'mapel'} untuk kelas ${schedule.kelas?.nama_kelas || '-'}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

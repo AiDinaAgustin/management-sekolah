@@ -129,6 +129,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const search = ref('');
 const page = ref(1);
 const sortBy = ref<'nama' | 'nip' | 'email'>('nama');
@@ -197,7 +198,12 @@ const getSortIcon = (column: 'nama' | 'nip' | 'email') => {
 };
 
 const deleteTeacher = async (teacher: TeacherItem) => {
-  if (!window.confirm(`Hapus data guru ${teacher.nama}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Data Guru',
+    message: `Yakin ingin menghapus data guru ${teacher.nama}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 

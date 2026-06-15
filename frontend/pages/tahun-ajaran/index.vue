@@ -207,6 +207,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const search = ref('');
 const semester = ref('');
 const statusAktif = ref('');
@@ -333,7 +334,12 @@ const activateAcademicYear = async (academicYear: AcademicYearItem) => {
 };
 
 const deleteAcademicYear = async (academicYear: AcademicYearItem) => {
-  if (!window.confirm(`Hapus data tahun ajaran ${academicYear.nama_tahun_ajaran} ${academicYear.semester}?`)) {
+  const confirmed = await confirm({
+    title: 'Hapus Tahun Ajaran',
+    message: `Yakin ingin menghapus data tahun ajaran ${academicYear.nama_tahun_ajaran} ${academicYear.semester}? Tindakan ini tidak dapat dibatalkan.`,
+  });
+
+  if (!confirmed) {
     return;
   }
 
