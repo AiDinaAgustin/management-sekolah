@@ -309,12 +309,14 @@ watch(selectedClassroomId, async () => {
   await fetchStudents();
 });
 
-watch(selectedStudentId, () => {
-  reportCard.value = null;
-});
+// Begitu siswa & semester terpilih, muat rapot otomatis tanpa klik tombol.
+watch([selectedStudentId, selectedSemester], async () => {
+  if (!selectedStudentId.value) {
+    reportCard.value = null;
+    return;
+  }
 
-watch(selectedSemester, () => {
-  reportCard.value = null;
+  await fetchReportCard();
 });
 
 onMounted(fetchClassrooms);
