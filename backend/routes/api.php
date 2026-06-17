@@ -61,6 +61,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('grades', GradeController::class)->only(['index', 'store', 'update', 'show']);
     Route::get('grades/recap', [GradeController::class, 'recap']);
 
-    Route::get('report-cards/{student}', [ReportCardController::class, 'show']);
-    Route::get('report-cards/{student}/pdf', [ReportCardController::class, 'pdf']);
+    Route::get('report-cards/{studentId}', [ReportCardController::class, 'show']);
+    Route::get('report-cards/{studentId}/pdf', [ReportCardController::class, 'pdf']);
 });
