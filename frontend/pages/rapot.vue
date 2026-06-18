@@ -288,6 +288,14 @@ onMounted(fetchClassrooms);
 
 <style>
 @media print {
+  /* Hilangkan pembatas tinggi & clipping dari layout supaya konten tidak terpotong satu layar. */
+  * {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Tampilkan hanya area dokumen rapot. */
   body * {
     visibility: hidden;
   }
@@ -297,11 +305,9 @@ onMounted(fetchClassrooms);
     visibility: visible;
   }
 
+  /* Tetap di alur normal (bukan absolute) agar bisa memanjang ke beberapa halaman. */
   .rapot-print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    position: static !important;
   }
 
   .rapot-page {
@@ -312,12 +318,21 @@ onMounted(fetchClassrooms);
   }
 
   /* Setiap rapot dimulai di halaman baru saat cetak per kelas. */
+  .rapot-page {
+    break-inside: avoid;
+  }
+
   .rapot-page + .rapot-page {
+    break-before: page;
     page-break-before: always;
   }
 
   .rapot-no-print {
     display: none !important;
   }
+}
+
+@page {
+  margin: 1.5cm;
 }
 </style>
